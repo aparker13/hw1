@@ -1,6 +1,6 @@
 //modified by: Andrew Parker
 //date: January 27, 2017
-//purpose: Lab assignment
+//purpose: Homework assignment
 //
 //cs3350 Spring 2017 Lab-1
 //author: Gordon Greisel

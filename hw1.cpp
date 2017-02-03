@@ -46,8 +46,7 @@
 #define WINDOW_HEIGHT 600
 
 #define MAX_PARTICLES 100000
-//#define MAX_CHARACTERS 10
-//#define MAX_STRINGS 5
+#define CIRCLE 200
 #define MAX_BOXES 5
 #define GRAVITY 0.1
 #define rnd() (float)rand() /(float)RAND_MAX
@@ -76,13 +75,12 @@ struct Particle {
 
 struct Game {
 	Shape box[MAX_BOXES];
-	//Shape box;
+	Shape circle;
 	Particle particle[MAX_PARTICLES];
 	int n;
 	int b;
 	int bubbler;
 	int mouse[2];
-	//Game() { n=0; bubbler=0; }
 	Game() { n=0; b=0; bubbler=0; }
 };
 
@@ -114,6 +112,11 @@ int main(void)
 		game.box[i].center.x = (140 + 5*65) - i*80;
 		game.box[i].center.y = (620 - 5*60) + i*50;
 	}
+
+	//declare a circle shape
+	game.circle.radius = 100;
+	game.circle.center.x = 300;
+	game.circle.center.y = 200;
 
 	//start animation
 	while (!done) {
@@ -264,6 +267,7 @@ int check_keys(XEvent *e, Game *game)
 void movement(Game *game)
 {
 	Particle *p;
+	float r, cx, cy, d1, d2, radius, distance;
 
 	if (game->n <= 0)
 		return;
@@ -281,7 +285,7 @@ void movement(Game *game)
 	    	p->s.center.y += p->velocity.y;
 
 		//check for collision with shapes...
-		//Shape *s;
+		//collision with box shape
 		for (int j=0; j<game->b; j++) {
 			Shape *s;
 			s = &game->box[j];
@@ -294,6 +298,22 @@ void movement(Game *game)
 	    				p->velocity.x += 0.008f;
 			}
 		}
+
+		//collision with circle shape
+		Shape *c;
+		c = &game->circle;
+		r = c->radius;
+		cx = c->center.x;
+		cy = c->center.y;
+		d1 = p->s.center.x - cx;
+		d2 = p->s.center.y - cy;
+		distance = sqrt((d1*d1 + d2*d2));
+		radius = r*r;
+		if (distance < radius) {
+		    p->velocity.y = (p->velocity.y/2) + (d1/distance);
+		    p->velocity.x = (p->velocity.x/2) + (d2/distance);
+		}
+
 		//check for off-screen
 		if (p->s.center.y < 0.0) {
 			//std::cout << "off screen" << std::endl;
@@ -304,7 +324,7 @@ void movement(Game *game)
  
 void render(Game *game)
 {
-	float w, h;
+	float w, h, r, cy, cx, x, y;
 	glClear(GL_COLOR_BUFFER_BIT);
 	//Draw shapes...
 
@@ -328,6 +348,27 @@ void render(Game *game)
 		glPopMatrix();
 	}
 
+	//draw circle
+	Shape *c;
+	glColor3ub(90,140,90);
+	c = &game->circle;
+	r = c->radius;
+	cx = c->center.x;
+	cy = c->center.y;
+	glPushMatrix();
+	glTranslatef(c->center.x, c->center.y, c->center.z);
+	glBegin(GL_TRIANGLE_FAN);
+	for(int i=0; i<CIRCLE; i++) {
+	    x = r*cos(i) - cx;
+	    y = r*sin(i) - cy;
+	    glVertex3f(x+cx, y-cy, 0);
+	    x = r*cos(i+0.1) - cx;
+	    y = r*sin(i+0.1) - cy;
+	    glVertex3f(x+cx, y-cy, 0);
+	}
+	glEnd();
+	glPopMatrix();
+
 	//draw all particles here
 	for (int i=0; i<game->n; i++) {
 		glPushMatrix();
@@ -343,6 +384,8 @@ void render(Game *game)
 		glEnd();
 		glPopMatrix();
 	}
+
+	//draw text
 }
 
 

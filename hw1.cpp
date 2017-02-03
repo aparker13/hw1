@@ -46,7 +46,9 @@
 #define WINDOW_HEIGHT 600
 
 #define MAX_PARTICLES 100000
-#define NBOXES 5
+//#define MAX_CHARACTERS 10
+//#define MAX_STRINGS 5
+#define MAX_BOXES 5
 #define GRAVITY 0.1
 #define rnd() (float)rand() /(float)RAND_MAX
 
@@ -73,7 +75,7 @@ struct Particle {
 };
 
 struct Game {
-	Shape box[NBOXES];
+	Shape box[MAX_BOXES];
 	//Shape box;
 	Particle particle[MAX_PARTICLES];
 	int n;
@@ -103,21 +105,15 @@ int main(void)
 	//declare game object
 	Game game;
 	game.n=0;
-	game.b=0;
+	game.b=MAX_BOXES;
 
 	//declare a box shape
 	for (int i=0; i<game.b; i++) {
-		game.box[i].width = 100 + (i*10);
-		game.box[i].height = 10 + (i*10);
-		game.box[i].center.x = (40 + 5*65) + i*5; //120 not 40 orig
-		game.box[i].center.y = (200 - 5*60) + i*5; //500 not 200 orig
+		game.box[i].width = 100;
+		game.box[i].height = 14;
+		game.box[i].center.x = (140 + 5*65) - i*80;
+		game.box[i].center.y = (620 - 5*60) + i*50;
 	}
-	/*
-	game.box.width = 100;
-	game.box.height = 10;
-	game.box.center.x = 120 + 5*65;
-	game.box.center.y = 500 - 5*60;
-	*/
 
 	//start animation
 	while (!done) {
@@ -200,8 +196,8 @@ void makeParticle(Game *game, int x, int y)
 	Particle *p = &game->particle[game->n];
 	p->s.center.x = x;
 	p->s.center.y = y;
-	p->velocity.y = rnd() * 0.5 - 0.25;
-	p->velocity.x =  rnd() * 2 - 0.5;
+	p->velocity.y = rnd() * 1.5 - 0.5;
+	p->velocity.x = rnd() * 1.5 - 0.75;
 	game->n++;
 }
 
@@ -237,7 +233,7 @@ void check_mouse(XEvent *e, Game *game)
 			game->mouse[0] = savex;
 			int y = WINDOW_HEIGHT - e->xbutton.y;
 			game->mouse[1] = y;
-			for (int i=0; i<5; i++) {
+			for (int i=0; i<10; i++) {
 		    		makeParticle(game, e->xbutton.x, y);
 			}
 		}
@@ -274,7 +270,9 @@ void movement(Game *game)
 
 	if (game->bubbler != 0) {
 	    	//the bubbler is on
-		makeParticle(game, game->mouse[0], game->mouse[1]);
+		for (int i=0; i<10; i++) {
+			makeParticle(game, game->mouse[0], game->mouse[1]);
+		}
 	}
 	for (int i=0; i<game->n; i++) {
 	    	p = &game->particle[i];
@@ -291,9 +289,9 @@ void movement(Game *game)
 			if (p->s.center.y < s->center.y + s->height && 
 				p->s.center.x >= s->center.x - s->width &&
 				p->s.center.x <= s->center.x + s->width) {
-	    		p->s.center.y = s->center.y + s->height;
-			p->velocity.y = -p->velocity.y * 0.8f;
-	    		p->velocity.x += 0.05f;
+	    				p->s.center.y = s->center.y + s->height;
+					p->velocity.y = -p->velocity.y * 0.4f;
+	    				p->velocity.x += 0.008f;
 			}
 		}
 		//check for off-screen
@@ -311,15 +309,16 @@ void render(Game *game)
 	//Draw shapes...
 
 	//draw box
+	Shape *s;
 	for (int i=0; i<game->b; i++) {
-	    	Shape *s;
+	    	//Shape *s;
 		glColor3ub(90,140,90);
 		s = &game->box[i];
 		//s = &game->box;
 		glPushMatrix();
 		glTranslatef(s->center.x, s->center.y, s->center.z);
-		w = s->width;// + i*10;
-		h = s->height;// + i*5;
+		w = s->width;
+		h = s->height;
 		glBegin(GL_QUADS);
 			glVertex2i(-w,-h);
 			glVertex2i(-w, h);

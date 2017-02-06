@@ -188,6 +188,9 @@ void init_opengl(void)
 	glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, -1, 1);
 	//Set the screen background color
 	glClearColor(0.1, 0.1, 0.1, 1.0);
+	//enable fonts
+	glEnable(GL_TEXTURE_2D);
+	initialize_fonts();
 }
 
 void makeParticle(Game *game, int x, int y)
@@ -309,10 +312,10 @@ void movement(Game *game)
 		d1 = p->s.center.x - cx;
 		d2 = p->s.center.y - cy;
 		distance = sqrt((d1*d1 + d2*d2));
-		//radius = r*r;
 		if (distance < r) {
-		    p->velocity.y = (p->velocity.y/2) + (d2/distance);
 		    p->velocity.x = (p->velocity.x/2) + (d1/distance);
+		    p->velocity.y = (p->velocity.y/2) + (d2/distance);
+		    p->velocity.y += -p->velocity.y * 0.2f;
 		}
 
 		//check for off-screen
@@ -326,6 +329,7 @@ void movement(Game *game)
 void render(Game *game)
 {
 	float w, h, r, cy, cx, x, y;
+	Rect re;
 	glClear(GL_COLOR_BUFFER_BIT);
 	//Draw shapes...
 
@@ -387,6 +391,16 @@ void render(Game *game)
 	}
 
 	//draw text
+	re.bot = WINDOW_HEIGHT - 100;
+	re.left = 600;
+	re.center = 0;
+	ggprint17(&re, 0, 0x00ffffff, "Waterfall Model");
+	char text[MAX_BOXES][16] = { "Maintenance", "Testing", "Coding", "Design", "Requirements"};
+	for (int i=0; i<MAX_BOXES; i++) {
+	    re.bot = game->box[i].center.y;
+	    re.left = game->box[i].center.x;
+	    ggprint17(&re, 0, 0x00ffffff, text[i]);
+	}
 }
 
 

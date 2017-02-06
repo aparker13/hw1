@@ -1,5 +1,5 @@
 //modified by: Andrew Parker
-//date: January 27, 2017
+//date: February 6, 2017
 //purpose: Homework assignment
 //
 //cs3350 Spring 2017 Lab-1
@@ -109,8 +109,8 @@ int main(void)
 	for (int i=0; i<game.b; i++) {
 		game.box[i].width = 100;
 		game.box[i].height = 14;
-		game.box[i].center.x = (140 + 5*65) - i*80;
-		game.box[i].center.y = (620 - 5*60) + i*50;
+		game.box[i].center.x = (160 + 5*65) - i*90;
+		game.box[i].center.y = (550 - 5*60) + i*65;
 	}
 
 	//declare a circle shape
@@ -188,7 +188,7 @@ void init_opengl(void)
 	glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, -1, 1);
 	//Set the screen background color
 	glClearColor(0.1, 0.1, 0.1, 1.0);
-	//enable fonts
+	//Initialize fonts
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 }
@@ -337,7 +337,7 @@ void render(Game *game)
 	Shape *s;
 	for (int i=0; i<game->b; i++) {
 	    	//Shape *s;
-		glColor3ub(90,140,90);
+		glColor3ub(120,40,40);
 		s = &game->box[i];
 		//s = &game->box;
 		glPushMatrix();
@@ -355,7 +355,7 @@ void render(Game *game)
 
 	//draw circle
 	Shape *c;
-	glColor3ub(90,140,90);
+	glColor3ub(120,40,40);
 	c = &game->circle;
 	r = c->radius;
 	cx = c->center.x;
@@ -377,7 +377,7 @@ void render(Game *game)
 	//draw all particles here
 	for (int i=0; i<game->n; i++) {
 		glPushMatrix();
-		glColor3ub(150,160,220);
+		glColor3ub(120,200,220);
 		Vec *c = &game->particle[i].s.center;
 		w = 2;
 		h = 2;
@@ -391,16 +391,26 @@ void render(Game *game)
 	}
 
 	//draw text
-	re.bot = WINDOW_HEIGHT - 100;
-	re.left = 600;
+	re.bot = WINDOW_HEIGHT - 585;
+	re.left = 630;
 	re.center = 0;
-	ggprint17(&re, 0, 0x00ffffff, "Waterfall Model");
+	ggprint16(&re, 0, 0x00ddaa00, "Waterfall Model");
 	char text[MAX_BOXES][16] = { "Maintenance", "Testing", "Coding", "Design", "Requirements"};
-	for (int i=0; i<MAX_BOXES; i++) {
-	    re.bot = game->box[i].center.y;
-	    re.left = game->box[i].center.x;
-	    ggprint17(&re, 0, 0x00ffffff, text[i]);
-	}
+	    re.bot = game->box[0].center.y - 12;
+	    re.left = game->box[0].center.x - 54;
+	    ggprint16(&re, 0, 0x00ddaa00, text[0]);
+	    re.bot = game->box[1].center.y - 12;
+	    re.left = game->box[1].center.x - 32;
+	    ggprint16(&re, 0, 0x00ddaa00, text[1]);
+	    re.bot = game->box[2].center.y - 12;
+	    re.left = game->box[2].center.x - 32;
+	    ggprint16(&re, 0, 0x00ddaa00, text[2]);
+	    re.bot = game->box[3].center.y - 12;
+	    re.left = game->box[3].center.x - 32;
+	    ggprint16(&re, 0, 0x00ddaa00, text[3]);
+	    re.bot = game->box[4].center.y - 12;
+	    re.left = game->box[4].center.x - 58;
+	    ggprint16(&re, 0, 0x00ddaa00, text[4]);
 }
 
 

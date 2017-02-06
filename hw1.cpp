@@ -114,9 +114,9 @@ int main(void)
 	}
 
 	//declare a circle shape
-	game.circle.radius = 100;
-	game.circle.center.x = 300;
-	game.circle.center.y = 200;
+	game.circle.radius = 150;
+	game.circle.center.x = 700;
+	game.circle.center.y = 0;
 
 	//start animation
 	while (!done) {
@@ -267,7 +267,7 @@ int check_keys(XEvent *e, Game *game)
 void movement(Game *game)
 {
 	Particle *p;
-	float r, cx, cy, d1, d2, radius, distance;
+	float r, cx, cy, d1, d2, distance;
 
 	if (game->n <= 0)
 		return;
@@ -292,7 +292,8 @@ void movement(Game *game)
 			//s = &game->box;
 			if (p->s.center.y < s->center.y + s->height && 
 				p->s.center.x >= s->center.x - s->width &&
-				p->s.center.x <= s->center.x + s->width) {
+				p->s.center.x <= s->center.x + s->width && 
+				p->s.center.y > s->center.y - s->height) {
 	    				p->s.center.y = s->center.y + s->height;
 					p->velocity.y = -p->velocity.y * 0.4f;
 	    				p->velocity.x += 0.008f;
@@ -308,10 +309,10 @@ void movement(Game *game)
 		d1 = p->s.center.x - cx;
 		d2 = p->s.center.y - cy;
 		distance = sqrt((d1*d1 + d2*d2));
-		radius = r*r;
-		if (distance < radius) {
-		    p->velocity.y = (p->velocity.y/2) + (d1/distance);
-		    p->velocity.x = (p->velocity.x/2) + (d2/distance);
+		//radius = r*r;
+		if (distance < r) {
+		    p->velocity.y = (p->velocity.y/2) + (d2/distance);
+		    p->velocity.x = (p->velocity.x/2) + (d1/distance);
 		}
 
 		//check for off-screen
@@ -360,10 +361,10 @@ void render(Game *game)
 	glBegin(GL_TRIANGLE_FAN);
 	for(int i=0; i<CIRCLE; i++) {
 	    x = r*cos(i) - cx;
-	    y = r*sin(i) - cy;
+	    y = r*sin(i) + cy;
 	    glVertex3f(x+cx, y-cy, 0);
 	    x = r*cos(i+0.1) - cx;
-	    y = r*sin(i+0.1) - cy;
+	    y = r*sin(i+0.1) + cy;
 	    glVertex3f(x+cx, y-cy, 0);
 	}
 	glEnd();
